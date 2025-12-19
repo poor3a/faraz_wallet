@@ -1,4 +1,6 @@
 package faraz.wallet.entity;
 
-public class TransactionStatus {
+public enum TransactionStatus {
+    SUCCESS,
+    FAILED
 }
