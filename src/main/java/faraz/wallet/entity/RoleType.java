@@ -1,4 +1,7 @@
 package faraz.wallet.entity;
 
-public class RoleType {
+public enum RoleType {
+    USER,
+    ADMIN,
+    SUPER_ADMIN
 }

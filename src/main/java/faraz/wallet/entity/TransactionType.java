@@ -1,4 +1,6 @@
 package faraz.wallet.entity;
 
-public class TransactionType {
+public enum TransactionType {
+    CREDIT,
+    DEBIT
 }
