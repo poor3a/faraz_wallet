@@ -1,5 +1,15 @@
 package faraz.wallet.repository;
 
-public interface TokenRepository {
-    //TODO: token lookup and invalidation queries
+import faraz.wallet.entity.Token;
+import faraz.wallet.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface TokenRepository extends JpaRepository<Token, Long> {
+
+    Optional<Token> findByToken(String token);
+
+    List<Token> findAllByUserAndExpiredFalseAndRevokedFalse(User user);
 }
