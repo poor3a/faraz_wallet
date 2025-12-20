@@ -1,7 +1,6 @@
 package faraz.wallet.security;
 
 import faraz.wallet.entity.User;
-import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,30 +8,41 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@Getter
 public class CustomUserDetails implements UserDetails {
 
-    private final User user;
+    private final Long id;
+    private final String phoneNumber;
+    private final String password;
+    private final boolean enabled;
+    private final Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(User user) {
-        this.user = user;
+        this.id = user.getId();
+        this.phoneNumber = user.getPhoneNumber();
+        this.password = user.getPassword();
+        this.enabled = user.isEnabled();
+        this.authorities = List.of(
+                new SimpleGrantedAuthority("ROLE_" + user.getRole().getType())
+        );
+    }
+
+    public Long getId() {
+        return id;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(
-                new SimpleGrantedAuthority("ROLE_" + user.getRole().getType().name())
-        );
+        return authorities;
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return user.getPhoneNumber();
+        return phoneNumber;
     }
 
     @Override
@@ -52,7 +62,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return user.isEnabled();
+        return enabled;
     }
-
 }

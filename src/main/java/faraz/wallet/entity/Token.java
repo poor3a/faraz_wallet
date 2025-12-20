@@ -1,7 +1,9 @@
 package faraz.wallet.entity;
 
 import jakarta.persistence.*;
+
 import java.time.Instant;
+
 
 @Entity
 @Table(name = "tokens")
@@ -38,36 +40,36 @@ public class Token {
         return token;
     }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     public User getUser() {
         return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public boolean isRevoked() {
         return revoked;
     }
 
-    public void setRevoked(boolean revoked) {
-        this.revoked = revoked;
-    }
-
     public boolean isExpired() {
         return expired;
     }
 
-    public void setExpired(boolean expired) {
-        this.expired = expired;
-    }
-
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setRevoked(boolean revoked) {
+        this.revoked = revoked;
+    }
+
+    public void setExpired(boolean expired) {
+        this.expired = expired;
     }
 
     public void setCreatedAt(Instant createdAt) {

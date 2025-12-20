@@ -8,8 +8,6 @@ import java.util.List;
 
 public interface SystemLogRepository extends JpaRepository<SystemLog, Long> {
 
-    List<SystemLog> findAllByUsername(String username);
-
     List<SystemLog> findAllByCreatedAtBetween(
             Instant from,
             Instant to

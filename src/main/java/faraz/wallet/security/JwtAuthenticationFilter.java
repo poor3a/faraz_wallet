@@ -8,7 +8,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -29,6 +28,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final TokenRepository tokenRepository;
     private final UserRepository userRepository;
+
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+
+        String path = request.getRequestURI();
+        return path.equals("/swagger-ui")
+                || path.startsWith("/swagger-ui/")
+                || path.startsWith("/swagger-ui.html")
+                || path.startsWith("/v2/api-docs/**")
+                || path.startsWith("/v3/api-docs/**")
+                || path.startsWith("/v3/api-docs")
+                || path.startsWith("/swagger-resources")
+                || path.startsWith("/webjars")
+                || path.startsWith("/auth")
+                || path.startsWith("/h2-console");
+    }
+
 
     @Override
     protected void doFilterInternal(
