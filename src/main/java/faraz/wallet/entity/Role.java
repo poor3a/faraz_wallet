@@ -1,13 +1,9 @@
 package faraz.wallet.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "roles")
-@Data
-@NoArgsConstructor
 public class Role {
 
     @Id
@@ -17,4 +13,19 @@ public class Role {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
     private RoleType type;
+
+    public Role() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public RoleType getType() {
+        return type;
+    }
+
+    public void setType(RoleType type) {
+        this.type = type;
+    }
 }

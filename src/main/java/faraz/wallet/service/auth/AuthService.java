@@ -9,15 +9,15 @@ import faraz.wallet.repository.TokenRepository;
 import faraz.wallet.repository.UserRepository;
 import faraz.wallet.security.JwtTokenProvider;
 import faraz.wallet.service.SystemLogService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 
 @Service
-@RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -25,20 +25,36 @@ public class AuthService {
     private final TokenRepository tokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final SystemLogService systemLogService;
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(SystemLogService.class);
+
+    public AuthService(
+            UserRepository userRepository,
+            OtpRepository otpRepository,
+            TokenRepository tokenRepository,
+            JwtTokenProvider jwtTokenProvider,
+            SystemLogService systemLogService
+    ) {
+        this.userRepository = userRepository;
+        this.otpRepository = otpRepository;
+        this.tokenRepository = tokenRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.systemLogService = systemLogService;
+    }
 
     @Transactional
-    public void login(String phoneNumber, String password) {
+    public String loginWithPassword(String phoneNumber, String password) {
 
         systemLogService.log(
-                "LOGIN_ATTEMPT",
+                "LOGIN_PASSWORD_ATTEMPT",
                 phoneNumber,
-                "User attempted login"
+                "Password login attempt"
         );
 
         User user = userRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> {
                     systemLogService.log(
-                            "LOGIN_FAILED",
+                            "LOGIN_PASSWORD_FAILED",
                             phoneNumber,
                             "User not found"
                     );
@@ -47,7 +63,7 @@ public class AuthService {
 
         if (!user.isEnabled()) {
             systemLogService.log(
-                    "LOGIN_FAILED",
+                    "LOGIN_PASSWORD_FAILED",
                     phoneNumber,
                     "User disabled"
             );
@@ -56,11 +72,54 @@ public class AuthService {
 
         if (!user.getPassword().equals(password)) {
             systemLogService.log(
-                    "LOGIN_FAILED",
+                    "LOGIN_PASSWORD_FAILED",
                     phoneNumber,
                     "Invalid credentials"
             );
             throw new ApiException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+        }
+
+        revokeAllUserTokens(user);
+
+        String jwt = jwtTokenProvider.generateToken(user);
+
+        saveToken(user, jwt);
+
+        systemLogService.log(
+                "LOGIN_PASSWORD_SUCCESS",
+                phoneNumber,
+                "JWT issued via password login"
+        );
+
+        return jwt;
+    }
+
+    @Transactional
+    public void requestOtp(String phoneNumber) {
+
+        systemLogService.log(
+                "OTP_REQUEST",
+                phoneNumber,
+                "OTP request initiated"
+        );
+
+        User user = userRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> {
+                    systemLogService.log(
+                            "OTP_REQUEST_FAILED",
+                            phoneNumber,
+                            "User not found"
+                    );
+                    return new ApiException(HttpStatus.NOT_FOUND, "User not found");
+                });
+
+        if (!user.isEnabled()) {
+            systemLogService.log(
+                    "OTP_REQUEST_FAILED",
+                    phoneNumber,
+                    "User disabled"
+            );
+            throw new ApiException(HttpStatus.FORBIDDEN, "User is disabled");
         }
 
         Otp otp = new Otp();
@@ -73,19 +132,20 @@ public class AuthService {
         otpRepository.save(otp);
 
         systemLogService.log(
-                "OTP_GENERATED",
+                "OTP_SENT",
                 phoneNumber,
                 "OTP generated and sent"
         );
+        LOGGER.info(otp.getCode());
     }
 
     @Transactional
-    public String verifyOtp(String phoneNumber, String code) {
+    public String loginWithOtp(String phoneNumber, String code) {
 
         systemLogService.log(
-                "OTP_VERIFICATION_ATTEMPT",
+                "LOGIN_OTP_ATTEMPT",
                 phoneNumber,
-                "OTP verification attempt"
+                "OTP login attempt"
         );
 
         User user = userRepository.findByPhoneNumber(phoneNumber)
@@ -97,7 +157,7 @@ public class AuthService {
                 .findTopByUserAndCodeAndUsedFalseOrderByCreatedAtDesc(user, code)
                 .orElseThrow(() -> {
                     systemLogService.log(
-                            "OTP_FAILED",
+                            "LOGIN_OTP_FAILED",
                             phoneNumber,
                             "Invalid OTP"
                     );
@@ -106,7 +166,7 @@ public class AuthService {
 
         if (otp.getExpiresAt().isBefore(Instant.now())) {
             systemLogService.log(
-                    "OTP_FAILED",
+                    "LOGIN_OTP_FAILED",
                     phoneNumber,
                     "OTP expired"
             );
@@ -115,11 +175,52 @@ public class AuthService {
 
         otp.setUsed(true);
         otpRepository.save(otp);
-        System.out.println(otp);
 
         revokeAllUserTokens(user);
 
         String jwt = jwtTokenProvider.generateToken(user);
+
+        saveToken(user, jwt);
+
+        systemLogService.log(
+                "LOGIN_OTP_SUCCESS",
+                phoneNumber,
+                "JWT issued via OTP login"
+        );
+
+        return jwt;
+    }
+
+    @Transactional
+    public void logout(String tokenValue) {
+
+        Token token = tokenRepository
+                .findByTokenAndRevokedFalseAndExpiredFalse(tokenValue)
+                .orElseThrow(() ->
+                        new ApiException(HttpStatus.UNAUTHORIZED, "Token already invalid")
+                );
+
+        token.setRevoked(true);
+        tokenRepository.save(token);
+
+        systemLogService.log(
+                "LOGOUT",
+                token.getUser() != null ? token.getUser().getPhoneNumber() : null,
+                "User logged out"
+        );
+    }
+
+
+    private void revokeAllUserTokens(User user) {
+
+        tokenRepository.findAllByUserAndExpiredFalseAndRevokedFalse(user)
+                .forEach(token -> {
+                    token.setRevoked(true);
+                    tokenRepository.save(token);
+                });
+    }
+
+    private void saveToken(User user, String jwt) {
 
         Token token = new Token();
         token.setUser(user);
@@ -129,41 +230,6 @@ public class AuthService {
         token.setCreatedAt(Instant.now());
 
         tokenRepository.save(token);
-
-        systemLogService.log(
-                "TOKEN_ISSUED",
-                phoneNumber,
-                "JWT issued"
-        );
-
-        return jwt;
-    }
-
-    @Transactional
-    public void logout(String tokenValue) {
-
-        Token token = tokenRepository.findByToken(tokenValue)
-                .orElseThrow(() ->
-                        new ApiException(HttpStatus.UNAUTHORIZED, "Invalid token")
-                );
-
-        token.setRevoked(true);
-        tokenRepository.save(token);
-
-        systemLogService.log(
-                "LOGOUT",
-                token.getUser().getPhoneNumber(),
-                "User logged out"
-        );
-    }
-
-    private void revokeAllUserTokens(User user) {
-
-        tokenRepository.findAllByUserAndExpiredFalseAndRevokedFalse(user)
-                .forEach(token -> {
-                    token.setRevoked(true);
-                    tokenRepository.save(token);
-                });
     }
 
     private String generateOtp() {

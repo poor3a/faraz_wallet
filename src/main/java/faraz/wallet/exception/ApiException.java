@@ -1,16 +1,11 @@
 package faraz.wallet.exception;
 
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import lombok.Getter;
 
-@Getter
-@NoArgsConstructor
 public class ApiException extends RuntimeException {
 
-    private  HttpStatus status;
-    private  Object[] args;
+    private final HttpStatus status;
+    private final Object[] args;
 
     public ApiException(HttpStatus status, String message) {
         super(message);
@@ -24,4 +19,11 @@ public class ApiException extends RuntimeException {
         this.args = args;
     }
 
+    public HttpStatus getStatus() {
+        return status;
+    }
+
+    public Object[] getArgs() {
+        return args;
+    }
 }
