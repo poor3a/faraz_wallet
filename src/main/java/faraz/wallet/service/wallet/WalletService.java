@@ -6,6 +6,7 @@ import faraz.wallet.exception.ApiException;
 import faraz.wallet.repository.UserRepository;
 import faraz.wallet.repository.WalletRepository;
 import faraz.wallet.service.SystemLogService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -14,21 +15,14 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class WalletService {
 
     private final WalletRepository walletRepository;
     private final UserRepository userRepository;
     private final SystemLogService systemLogService;
 
-    public WalletService(
-            WalletRepository walletRepository,
-            UserRepository userRepository,
-            SystemLogService systemLogService
-    ) {
-        this.walletRepository = walletRepository;
-        this.userRepository = userRepository;
-        this.systemLogService = systemLogService;
-    }
+
 
     public Wallet getOrCreateWallet(Long userId) {
 

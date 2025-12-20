@@ -1,5 +1,11 @@
 package faraz.wallet.dto.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+
 public class UserResponse {
 
     private Long id;
@@ -7,26 +13,6 @@ public class UserResponse {
     private boolean enabled;
     private String role;
 
-    public UserResponse(Long id, String phoneNumber, boolean enabled, String role) {
-        this.id = id;
-        this.phoneNumber = phoneNumber;
-        this.enabled = enabled;
-        this.role = role;
-    }
 
-    public Long getId() {
-        return id;
-    }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public String getRole() {
-        return role;
-    }
 }

@@ -1,21 +1,20 @@
 package faraz.wallet.controller.superAdmin;
 
-import faraz.wallet.entity.RoleType;
+import faraz.wallet.Enums.RoleType;
 import faraz.wallet.entity.User;
 import faraz.wallet.service.adminstator.UserManagementService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/super_admin/users")
 public class SuperAdminUserController {
 
     private final UserManagementService userManagementService;
 
-    public SuperAdminUserController(UserManagementService userManagementService) {
-        this.userManagementService = userManagementService;
-    }
 
     @GetMapping
     public List<User> getAllUsers() {

@@ -1,7 +1,9 @@
 package faraz.wallet.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
 
+@Getter
 public class ChangePasswordRequest {
 
     @NotBlank
@@ -10,11 +12,4 @@ public class ChangePasswordRequest {
     @NotBlank
     private String newPassword;
 
-    public String getOldPassword() {
-        return oldPassword;
-    }
-
-    public String getNewPassword() {
-        return newPassword;
-    }
 }

@@ -12,16 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 
 @Service
+@RequiredArgsConstructor
 public class SystemLogService {
 
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(SystemLogService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SystemLogService.class);
 
     private final SystemLogRepository systemLogRepository;
 
-    public SystemLogService(SystemLogRepository systemLogRepository) {
-        this.systemLogRepository = systemLogRepository;
-    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void log(String action, String username, String description) {

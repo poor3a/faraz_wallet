@@ -1,8 +1,11 @@
 package faraz.wallet.dto.request;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+
 import java.math.BigDecimal;
 
+@Getter
 public class TransactionRequest {
 
     @NotNull
@@ -10,11 +13,4 @@ public class TransactionRequest {
 
     private String description;
 
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public String getDescription() {
-        return description;
-    }
 }

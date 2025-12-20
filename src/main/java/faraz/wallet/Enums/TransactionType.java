@@ -1,4 +1,4 @@
-package faraz.wallet.entity;
+package faraz.wallet.Enums;
 
 public enum TransactionType {
     CREDIT,

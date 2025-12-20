@@ -2,13 +2,14 @@ package faraz.wallet.service.transaction;
 
 import faraz.wallet.entity.Transaction;
 import faraz.wallet.entity.Wallet;
-import faraz.wallet.entity.TransactionStatus;
-import faraz.wallet.entity.TransactionType;
+import faraz.wallet.Enums.TransactionStatus;
+import faraz.wallet.Enums.TransactionType;
 import faraz.wallet.exception.ApiException;
 import faraz.wallet.repository.TransactionRepository;
 import faraz.wallet.repository.WalletRepository;
 import faraz.wallet.service.SystemLogService;
 import faraz.wallet.service.wallet.WalletService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 @Service
+@RequiredArgsConstructor
 public class TransactionCommandService {
 
     private final TransactionRepository transactionRepository;
@@ -24,17 +26,7 @@ public class TransactionCommandService {
     private final WalletService walletService;
     private final SystemLogService systemLogService;
 
-    public TransactionCommandService(
-            TransactionRepository transactionRepository,
-            WalletRepository walletRepository,
-            WalletService walletService,
-            SystemLogService systemLogService
-    ) {
-        this.transactionRepository = transactionRepository;
-        this.walletRepository = walletRepository;
-        this.walletService = walletService;
-        this.systemLogService = systemLogService;
-    }
+
 
     @Transactional
     public void credit(Long userId, BigDecimal amount, String description) {

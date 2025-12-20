@@ -4,25 +4,17 @@ import faraz.wallet.entity.User;
 import faraz.wallet.exception.ApiException;
 import faraz.wallet.repository.UserRepository;
 import faraz.wallet.service.SystemLogService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final SystemLogService systemLogService;
-    private final PasswordEncoder passwordEncoder;
-
-    public UserService(
-            UserRepository userRepository,
-            SystemLogService systemLogService, PasswordEncoder passwordEncoder
-    ) {
-        this.userRepository = userRepository;
-        this.systemLogService = systemLogService;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     public User updateMyProfile(Long userId, String email, String firstName, String lastName) {
 
@@ -49,11 +41,11 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "User not found"));
 
-        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+        if (!oldPassword.equals(user.getPassword())) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Old password is incorrect");
         }
 
-        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setPassword(newPassword);
         userRepository.save(user);
 
         systemLogService.log(

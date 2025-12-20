@@ -5,18 +5,18 @@ import faraz.wallet.dto.request.UpdateMyProfileRequest;
 import faraz.wallet.entity.User;
 import faraz.wallet.security.CustomUserDetails;
 import faraz.wallet.service.user.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     @PutMapping("/profile")
     public User updateMyProfile(

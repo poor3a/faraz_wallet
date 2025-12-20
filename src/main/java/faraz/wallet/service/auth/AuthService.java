@@ -9,6 +9,7 @@ import faraz.wallet.repository.TokenRepository;
 import faraz.wallet.repository.UserRepository;
 import faraz.wallet.security.JwtTokenProvider;
 import faraz.wallet.service.SystemLogService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -26,25 +28,10 @@ public class AuthService {
     private final TokenRepository tokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final SystemLogService systemLogService;
-    private final PasswordEncoder passwordEncoder;
 
     private static final Logger LOGGER =
             LoggerFactory.getLogger(SystemLogService.class);
 
-    public AuthService(
-            UserRepository userRepository,
-            OtpRepository otpRepository,
-            TokenRepository tokenRepository,
-            JwtTokenProvider jwtTokenProvider,
-            SystemLogService systemLogService, PasswordEncoder passwordEncoder
-    ) {
-        this.userRepository = userRepository;
-        this.otpRepository = otpRepository;
-        this.tokenRepository = tokenRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.systemLogService = systemLogService;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Transactional
     public String loginWithPassword(String phoneNumber, String password) {
@@ -74,7 +61,8 @@ public class AuthService {
             throw new ApiException(HttpStatus.FORBIDDEN, "User is disabled");
         }
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+//        if (!passwordEncoder.matches(password, user.getPassword())) {
+        if(!password.equals(user.getPassword())){
             systemLogService.log(
                     "LOGIN_PASSWORD_FAILED",
                     phoneNumber,

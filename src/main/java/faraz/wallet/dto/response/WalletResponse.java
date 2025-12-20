@@ -1,22 +1,17 @@
 package faraz.wallet.dto.response;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.math.BigDecimal;
 
+@Getter
+@RequiredArgsConstructor
 public class WalletResponse {
 
     private final String accountId;
     private final BigDecimal balance;
 
-    public WalletResponse(String accountId, BigDecimal balance) {
-        this.accountId = accountId;
-        this.balance = balance;
-    }
 
-    public String getAccountId() {
-        return accountId;
-    }
 
-    public BigDecimal getBalance() {
-        return balance;
-    }
 }
