@@ -6,11 +6,13 @@ import faraz.wallet.dto.response.TransactionSummaryResponse;
 import faraz.wallet.security.CustomUserDetails;
 import faraz.wallet.service.transaction.TransactionCommandService;
 import faraz.wallet.service.transaction.TransactionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/user/transactions")
 public class UserTransactionController {
@@ -18,13 +20,7 @@ public class UserTransactionController {
     private final TransactionService transactionService;
     private final TransactionCommandService transactionCommandService;
 
-    public UserTransactionController(
-            TransactionService transactionService,
-            TransactionCommandService transactionCommandService
-    ) {
-        this.transactionService = transactionService;
-        this.transactionCommandService = transactionCommandService;
-    }
+
 
     @GetMapping
     public List<TransactionResponse> getMyTransactions(

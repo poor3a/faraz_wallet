@@ -4,10 +4,11 @@ import faraz.wallet.dto.response.TransactionSummaryResponse;
 import faraz.wallet.dto.response.TransactionResponse;
 import faraz.wallet.entity.Transaction;
 import faraz.wallet.entity.Wallet;
-import faraz.wallet.entity.TransactionType;
+import faraz.wallet.Enums.TransactionType;
 import faraz.wallet.repository.TransactionRepository;
 import faraz.wallet.service.SystemLogService;
 import faraz.wallet.service.wallet.WalletService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -15,21 +16,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final WalletService walletService;
     private final SystemLogService systemLogService;
 
-    public TransactionService(
-            TransactionRepository transactionRepository,
-            WalletService walletService,
-            SystemLogService systemLogService
-    ) {
-        this.transactionRepository = transactionRepository;
-        this.walletService = walletService;
-        this.systemLogService = systemLogService;
-    }
 
     public List<TransactionResponse> getMyTransactions(Long userId) {
 

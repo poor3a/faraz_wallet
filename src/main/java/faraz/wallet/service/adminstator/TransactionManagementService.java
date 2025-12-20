@@ -3,19 +3,18 @@ package faraz.wallet.service.adminstator;
 import faraz.wallet.dto.response.TransactionResponse;
 import faraz.wallet.entity.Transaction;
 import faraz.wallet.repository.TransactionRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class TransactionManagementService {
 
     private final TransactionRepository transactionRepository;
 
-    public TransactionManagementService(TransactionRepository transactionRepository) {
-        this.transactionRepository = transactionRepository;
-    }
 
     public List<TransactionResponse> getAllTransactions() {
         return transactionRepository.findAll()

@@ -1,7 +1,11 @@
 package faraz.wallet.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor
 public class LoginWithOtpRequest {
 
     @NotBlank
@@ -10,14 +14,6 @@ public class LoginWithOtpRequest {
     @NotBlank
     private String code;
 
-    public LoginWithOtpRequest() {
-    }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
 
-    public String getCode() {
-        return code;
-    }
 }

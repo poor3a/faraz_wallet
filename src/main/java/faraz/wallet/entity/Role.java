@@ -1,8 +1,15 @@
 package faraz.wallet.entity;
 
+import faraz.wallet.Enums.RoleType;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(name = "roles")
 public class Role {
 
@@ -14,18 +21,4 @@ public class Role {
     @Column(nullable = false, unique = true)
     private RoleType type;
 
-    public Role() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public RoleType getType() {
-        return type;
-    }
-
-    public void setType(RoleType type) {
-        this.type = type;
-    }
 }

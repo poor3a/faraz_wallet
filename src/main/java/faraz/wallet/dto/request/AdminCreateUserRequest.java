@@ -1,7 +1,10 @@
 package faraz.wallet.dto.request;
 
+import faraz.wallet.Enums.RoleType;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
 
+@Getter
 public class AdminCreateUserRequest {
 
     @NotBlank
@@ -11,17 +14,6 @@ public class AdminCreateUserRequest {
     private String password;
 
     @NotBlank
-    private String role;
+    private RoleType role;
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getRole() {
-        return role;
-    }
 }
