@@ -1,5 +1,6 @@
 package faraz.wallet.service.wallet;
 
+import faraz.wallet.dto.response.WalletResponse;
 import faraz.wallet.entity.User;
 import faraz.wallet.entity.Wallet;
 import faraz.wallet.exception.ApiException;

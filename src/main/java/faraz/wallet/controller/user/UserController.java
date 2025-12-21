@@ -2,10 +2,14 @@ package faraz.wallet.controller.user;
 
 import faraz.wallet.dto.request.ChangePasswordRequest;
 import faraz.wallet.dto.request.UpdateMyProfileRequest;
+import faraz.wallet.dto.response.UserProfileResponse;
+import faraz.wallet.dto.response.UserResponse;
 import faraz.wallet.entity.User;
 import faraz.wallet.security.CustomUserDetails;
 import faraz.wallet.service.user.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,22 +23,22 @@ public class UserController {
 
 
     @PutMapping("/profile")
-    public User updateMyProfile(
+    public ResponseEntity<UserProfileResponse> updateMyProfile(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody UpdateMyProfileRequest request
+            @Valid @RequestBody UpdateMyProfileRequest request
     ) {
-
-        return userService.updateMyProfile(
+        UserProfileResponse response = userService.updateMyProfile(
                 userDetails.getId(),
                 request.getEmail(),
                 request.getFirstName(),
                 request.getLastName()
         );
 
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/change-password")
-    public void changePassword(
+    public ResponseEntity<Void> changePassword(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody ChangePasswordRequest request
     ) {
@@ -43,5 +47,7 @@ public class UserController {
                 request.getOldPassword(),
                 request.getNewPassword()
         );
+
+        return ResponseEntity.noContent().build();
     }
 }

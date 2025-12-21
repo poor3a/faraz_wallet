@@ -1,5 +1,6 @@
 package faraz.wallet.service.user;
 
+import faraz.wallet.dto.response.UserProfileResponse;
 import faraz.wallet.entity.User;
 import faraz.wallet.exception.ApiException;
 import faraz.wallet.repository.UserRepository;
@@ -21,10 +22,17 @@ public class UserService {
 
 
 
-    public User updateMyProfile(Long userId, String email, String firstName, String lastName) {
+    public UserProfileResponse updateMyProfile(
+            Long userId,
+            String email,
+            String firstName,
+            String lastName
+    ) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() ->
+                        new ApiException(HttpStatus.NOT_FOUND, "User not found")
+                );
 
         if (email != null) user.setEmail(email);
         if (firstName != null) user.setFirstName(firstName);
@@ -38,8 +46,18 @@ public class UserService {
                 "User updated own profile"
         );
 
-        return user;
+        return toUserProfileResponse(user);
     }
+    private UserProfileResponse toUserProfileResponse(User user) {
+        return new UserProfileResponse(
+                user.getId(),
+                user.getPhoneNumber(),
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName()
+        );
+    }
+
 
     public void changePassword(Long userId, String oldPassword, String newPassword) {
 

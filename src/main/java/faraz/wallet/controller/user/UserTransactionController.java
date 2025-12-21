@@ -6,7 +6,9 @@ import faraz.wallet.dto.response.TransactionSummaryResponse;
 import faraz.wallet.security.CustomUserDetails;
 import faraz.wallet.service.transaction.TransactionCommandService;
 import faraz.wallet.service.transaction.TransactionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,40 +25,48 @@ public class UserTransactionController {
 
 
     @GetMapping
-    public List<TransactionResponse> getMyTransactions(
-            @AuthenticationPrincipal CustomUserDetails user
+    public ResponseEntity<List<TransactionResponse>> getMyTransactions(
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        return transactionService.getMyTransactions(user.getId());
+        return ResponseEntity.ok(
+                transactionService.getMyTransactions(userDetails.getId())
+        );
     }
 
     @GetMapping("/summary")
-    public TransactionSummaryResponse getMyTransactionSummary(
-            @AuthenticationPrincipal CustomUserDetails user
+    public ResponseEntity<TransactionSummaryResponse> getMyTransactionSummary(
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        return transactionService.getMyTransactionSummary(user.getId());
+        return ResponseEntity.ok(
+                transactionService.getMyTransactionSummary(userDetails.getId())
+        );
     }
 
     @PostMapping("/credit")
-    public void credit(
-            @AuthenticationPrincipal CustomUserDetails user,
-            @RequestBody TransactionRequest request
+    public ResponseEntity<Void> credit(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody TransactionRequest request
     ) {
         transactionCommandService.credit(
-                user.getId(),
+                userDetails.getId(),
                 request.getAmount(),
                 request.getDescription()
         );
+
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/debit")
-    public void debit(
-            @AuthenticationPrincipal CustomUserDetails user,
-            @RequestBody TransactionRequest request
+    public ResponseEntity<Void> debit(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody TransactionRequest request
     ) {
         transactionCommandService.debit(
-                user.getId(),
+                userDetails.getId(),
                 request.getAmount(),
                 request.getDescription()
         );
+
+        return ResponseEntity.noContent().build();
     }
 }
