@@ -1,5 +1,7 @@
 package faraz.wallet.controller.admin;
 
+import faraz.wallet.dto.request.UpdateUserRequest;
+import faraz.wallet.dto.response.AdminUserResponse;
 import faraz.wallet.dto.response.UserResponse;
 import faraz.wallet.dto.request.AdminCreateUserRequest;
 import faraz.wallet.enums.RoleType;
@@ -21,9 +23,12 @@ public class AdminUserController {
 
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userManagementService.getAllUsers();
+    public ResponseEntity<List<AdminUserResponse>> getAllUsers() {
+        return ResponseEntity.ok(
+                userManagementService.getAllUserResponses()
+        );
     }
+
 
     @PostMapping("/create")
     public ResponseEntity<UserResponse> createUser(
@@ -45,22 +50,19 @@ public class AdminUserController {
     }
 
     @PutMapping("/{userId}")
-    public User updateUser(
+    public ResponseEntity<AdminUserResponse> updateUser(
             @PathVariable Long userId,
-            @RequestParam(required = false) String email,
-            @RequestParam(required = false) String firstName,
-            @RequestParam(required = false) String lastName,
-            @RequestParam(required = false) Boolean enabled,
-            @RequestParam(required = false) RoleType role
+            @RequestBody UpdateUserRequest request
     ) {
-        return userManagementService.updateUser(
+        AdminUserResponse response = userManagementService.updateUser(
                 userId,
-                email,
-                firstName,
-                lastName,
-                enabled,
-                role
+                request.getEmail(),
+                request.getFirstName(),
+                request.getLastName(),
+                request.getEnabled(),
+                request.getRole()
         );
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{userId}/disable")

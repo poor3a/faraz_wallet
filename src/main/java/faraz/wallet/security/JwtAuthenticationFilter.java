@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -17,35 +18,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, TokenRepository tokenRepository, UserRepository userRepository) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.tokenRepository = tokenRepository;
-        this.userRepository = userRepository;
-    }
+
 
     private final JwtTokenProvider jwtTokenProvider;
     private final TokenRepository tokenRepository;
     private final UserRepository userRepository;
 
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-
-        String path = request.getRequestURI();
-
-        return  path.equals("/swagger-ui")
-                || path.startsWith("/swagger-ui/")
-                || path.startsWith("/swagger-ui.html")
-                || path.startsWith("/v2/api-docs/")
-                || path.startsWith("/v3/api-docs/")
-                || path.startsWith("/v3/api-docs")
-                || path.startsWith("/swagger-resources")
-                || path.startsWith("/webjars")
-                || path.startsWith("/auth")
-                || path.startsWith("/h2-console");
-    }
 
 
     @Override

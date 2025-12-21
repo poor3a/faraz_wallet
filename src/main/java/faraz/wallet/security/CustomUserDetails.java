@@ -1,6 +1,7 @@
 package faraz.wallet.security;
 
 import faraz.wallet.entity.User;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,6 +11,7 @@ import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
 
+    @Getter
     private final Long id;
     private final String phoneNumber;
     private final String password;
@@ -24,10 +26,6 @@ public class CustomUserDetails implements UserDetails {
         this.authorities = List.of(
                 new SimpleGrantedAuthority("ROLE_" + user.getRole().getType())
         );
-    }
-
-    public Long getId() {
-        return id;
     }
 
     @Override

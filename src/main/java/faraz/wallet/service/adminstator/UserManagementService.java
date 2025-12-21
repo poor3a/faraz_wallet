@@ -1,5 +1,6 @@
 package faraz.wallet.service.adminstator;
 
+import faraz.wallet.dto.response.AdminUserResponse;
 import faraz.wallet.entity.Role;
 import faraz.wallet.enums.RoleType;
 import faraz.wallet.entity.User;
@@ -26,8 +27,25 @@ public class UserManagementService {
 
 
 
-    public List<User> getAllUsers() {
+    public List<AdminUserResponse> getAllUserResponses() {
+        return userRepository.findAll()
+                .stream()
+                .map(this::toAdminResponse)
+                .toList();
+    }
+    public List<User> getAllUsers(){
         return userRepository.findAll();
+    }
+
+    private AdminUserResponse toAdminResponse(User user) {
+        return new AdminUserResponse(
+                user.getId(),
+                user.getPhoneNumber(),
+                user.getEmail(),
+                user.getRole().getType().toString(),
+                user.isEnabled(),
+                user.getRegisterDate()
+        );
     }
     public User getByPhoneNumber(String phoneNumber) {
 
@@ -68,7 +86,7 @@ public class UserManagementService {
         return user;
     }
 
-    public User updateUser(
+    public AdminUserResponse updateUser(
             Long userId,
             String email,
             String firstName,
@@ -78,7 +96,9 @@ public class UserManagementService {
     ) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() ->
+                        new ApiException(HttpStatus.NOT_FOUND, "User not found")
+                );
 
         if (email != null) user.setEmail(email);
         if (firstName != null) user.setFirstName(firstName);
@@ -87,7 +107,9 @@ public class UserManagementService {
 
         if (roleType != null) {
             Role role = roleRepository.findByType(roleType)
-                    .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Role not found"));
+                    .orElseThrow(() ->
+                            new ApiException(HttpStatus.NOT_FOUND, "Role not found")
+                    );
             user.setRole(role);
         }
 
@@ -99,8 +121,19 @@ public class UserManagementService {
                 "User updated by management"
         );
 
-        return user;
+        return toAdminUserResponse(user);
     }
+    private AdminUserResponse toAdminUserResponse(User user) {
+        return new AdminUserResponse(
+                user.getId(),
+                user.getPhoneNumber(),
+                user.getEmail(),
+                user.getRole().getType().name(),
+                user.isEnabled(),
+                user.getRegisterDate()
+        );
+    }
+
 
     public void disableUser(Long userId) {
 
