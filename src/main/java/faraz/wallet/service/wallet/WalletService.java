@@ -9,9 +9,11 @@ import faraz.wallet.service.SystemLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -22,8 +24,10 @@ public class WalletService {
     private final UserRepository userRepository;
     private final SystemLogService systemLogService;
 
-
-
+    public Optional<Wallet> findByUser(User user) {
+        return walletRepository.findByUser(user);
+    }
+@Transactional
     public Wallet getOrCreateWallet(Long userId) {
 
         User user = userRepository.findById(userId)
@@ -31,37 +35,40 @@ public class WalletService {
                         new ApiException(HttpStatus.NOT_FOUND, "User not found")
                 );
 
-        return walletRepository.findByUser(user)
-                .orElseGet(() -> {
+        Optional<Wallet> existingWallet = walletRepository.findByUser(user);
 
-                    Wallet wallet = new Wallet();
-                    wallet.setUser(user);
-                    wallet.setAccountId(UUID.randomUUID().toString());
-                    wallet.setBalance(BigDecimal.valueOf(0L));
-                    wallet.setCreatedAt(Instant.now());
+        if (existingWallet.isPresent()) {
+            Wallet wallet = existingWallet.get();
 
-                    Wallet savedWallet = walletRepository.save(wallet);
+            systemLogService.log(
+                    "WALLET_ACCESSED",
+                    user.getPhoneNumber(),
+                    "Wallet accessed with accountId=" + wallet.getAccountId()
+            );
 
-                    systemLogService.log(
-                            "WALLET_CREATED",
-                            user.getPhoneNumber(),
-                            "Wallet created with accountId=" + savedWallet.getAccountId()
-                    );
+            return wallet;
+        }
 
-                    return savedWallet;
-                });
-    }
-
-    public BigDecimal getWalletBalance(Long userId) {
-
-        Wallet wallet = getOrCreateWallet(userId);
+        Wallet wallet = createWalletForUser(user);
 
         systemLogService.log(
-                "WALLET_BALANCE_VIEW",
-                wallet.getUser().getPhoneNumber(),
-                "Wallet balance accessed"
+                "WALLET_CREATED",
+                user.getPhoneNumber(),
+                "Wallet created with accountId=" + wallet.getAccountId()
         );
 
-        return wallet.getBalance();
+        return wallet;
     }
+
+    private Wallet createWalletForUser(User user) {
+        Wallet wallet = new Wallet();
+        wallet.setUser(user);
+        wallet.setAccountId(UUID.randomUUID().toString());
+        wallet.setBalance(BigDecimal.ZERO);
+        wallet.setCreatedAt(Instant.now());
+        return walletRepository.save(wallet);
+    }
+
+
+
 }

@@ -1,4 +1,4 @@
-package faraz.wallet.Enums;
+package faraz.wallet.enums;
 
 public enum RoleType {
     USER,

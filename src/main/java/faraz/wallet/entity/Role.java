@@ -1,6 +1,6 @@
 package faraz.wallet.entity;
 
-import faraz.wallet.Enums.RoleType;
+import faraz.wallet.enums.RoleType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

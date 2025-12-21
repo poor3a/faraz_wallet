@@ -4,7 +4,7 @@ import faraz.wallet.dto.response.TransactionSummaryResponse;
 import faraz.wallet.dto.response.TransactionResponse;
 import faraz.wallet.entity.Transaction;
 import faraz.wallet.entity.Wallet;
-import faraz.wallet.Enums.TransactionType;
+import faraz.wallet.enums.TransactionType;
 import faraz.wallet.repository.TransactionRepository;
 import faraz.wallet.service.SystemLogService;
 import faraz.wallet.service.wallet.WalletService;

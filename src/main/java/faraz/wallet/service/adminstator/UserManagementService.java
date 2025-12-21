@@ -1,38 +1,43 @@
 package faraz.wallet.service.adminstator;
 
 import faraz.wallet.entity.Role;
-import faraz.wallet.Enums.RoleType;
+import faraz.wallet.enums.RoleType;
 import faraz.wallet.entity.User;
 import faraz.wallet.exception.ApiException;
 import faraz.wallet.repository.RoleRepository;
 import faraz.wallet.repository.UserRepository;
 import faraz.wallet.service.SystemLogService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserManagementService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final SystemLogService systemLogService;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserManagementService(
-            UserRepository userRepository,
-            RoleRepository roleRepository,
-            SystemLogService systemLogService
-    ) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.systemLogService = systemLogService;
-    }
 
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+    public User getByPhoneNumber(String phoneNumber) {
+
+        return userRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() ->
+                        new ApiException(
+                                HttpStatus.NOT_FOUND,
+                                "User not found with phone number: " + phoneNumber
+                        )
+                );
     }
 
 
@@ -47,7 +52,7 @@ public class UserManagementService {
 
         User user = new User();
         user.setPhoneNumber(phone);
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password));
         user.setEnabled(true);
         user.setRole(role);
         user.setRegisterDate(Instant.now());
