@@ -1,8 +1,8 @@
 package faraz.wallet.entity;
 
 
-import faraz.wallet.Enums.TransactionStatus;
-import faraz.wallet.Enums.TransactionType;
+import faraz.wallet.enums.TransactionStatus;
+import faraz.wallet.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -9,12 +9,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final SystemLogService systemLogService;
+    private final PasswordEncoder passwordEncoder;
+
+
 
     public User updateMyProfile(Long userId, String email, String firstName, String lastName) {
 
@@ -41,11 +46,11 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "User not found"));
 
-        if (!oldPassword.equals(user.getPassword())) {
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Old password is incorrect");
         }
 
-        user.setPassword(newPassword);
+        user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
         systemLogService.log(

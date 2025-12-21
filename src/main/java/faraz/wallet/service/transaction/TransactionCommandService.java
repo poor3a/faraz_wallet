@@ -2,8 +2,8 @@ package faraz.wallet.service.transaction;
 
 import faraz.wallet.entity.Transaction;
 import faraz.wallet.entity.Wallet;
-import faraz.wallet.Enums.TransactionStatus;
-import faraz.wallet.Enums.TransactionType;
+import faraz.wallet.enums.TransactionStatus;
+import faraz.wallet.enums.TransactionType;
 import faraz.wallet.exception.ApiException;
 import faraz.wallet.repository.TransactionRepository;
 import faraz.wallet.repository.WalletRepository;
@@ -37,7 +37,7 @@ public class TransactionCommandService {
                 wallet, amount, description, TransactionType.CREDIT
         );
 
-        switch(amount.compareTo(BigDecimal.valueOf(0)))
+        switch(amount.compareTo(BigDecimal.ZERO))
         {
             case (-1): transaction.setStatus(TransactionStatus.FAILED);
 

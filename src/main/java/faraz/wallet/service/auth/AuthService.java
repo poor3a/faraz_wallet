@@ -10,12 +10,12 @@ import faraz.wallet.repository.UserRepository;
 import faraz.wallet.security.JwtTokenProvider;
 import faraz.wallet.service.SystemLogService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 
@@ -28,9 +28,10 @@ public class AuthService {
     private final TokenRepository tokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final SystemLogService systemLogService;
+    private final PasswordEncoder passwordEncoder;
 
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(SystemLogService.class);
+            LoggerFactory.getLogger(AuthService.class);
 
 
     @Transactional
@@ -61,8 +62,7 @@ public class AuthService {
             throw new ApiException(HttpStatus.FORBIDDEN, "User is disabled");
         }
 
-//        if (!passwordEncoder.matches(password, user.getPassword())) {
-        if(!password.equals(user.getPassword())){
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             systemLogService.log(
                     "LOGIN_PASSWORD_FAILED",
                     phoneNumber,
@@ -74,7 +74,6 @@ public class AuthService {
         revokeAllUserTokens(user);
 
         String jwt = jwtTokenProvider.generateToken(user);
-
         saveToken(user, jwt);
 
         systemLogService.log(
@@ -85,6 +84,7 @@ public class AuthService {
 
         return jwt;
     }
+
 
     @Transactional
     public void requestOtp(String phoneNumber) {
@@ -119,7 +119,7 @@ public class AuthService {
         otp.setCode(generateOtp());
         otp.setUsed(false);
         otp.setCreatedAt(Instant.now());
-        otp.setExpiresAt(Instant.now().plusSeconds(300));
+        otp.setExpiresAt(Instant.now().plusSeconds(100));
 
         otpRepository.save(otp);
 
@@ -128,8 +128,10 @@ public class AuthService {
                 phoneNumber,
                 "OTP generated and sent"
         );
-        LOGGER.info(otp.getCode());
+
+        LOGGER.info("OTP for {} = {}", phoneNumber, otp.getCode());
     }
+
 
     @Transactional
     public String loginWithOtp(String phoneNumber, String code) {
@@ -171,7 +173,6 @@ public class AuthService {
         revokeAllUserTokens(user);
 
         String jwt = jwtTokenProvider.generateToken(user);
-
         saveToken(user, jwt);
 
         systemLogService.log(
@@ -182,6 +183,7 @@ public class AuthService {
 
         return jwt;
     }
+
 
     @Transactional
     public void logout(String tokenValue) {
@@ -204,7 +206,6 @@ public class AuthService {
 
 
     private void revokeAllUserTokens(User user) {
-
         tokenRepository.findAllByUserAndExpiredFalseAndRevokedFalse(user)
                 .forEach(token -> {
                     token.setRevoked(true);
@@ -213,7 +214,6 @@ public class AuthService {
     }
 
     private void saveToken(User user, String jwt) {
-
         Token token = new Token();
         token.setUser(user);
         token.setToken(jwt);
@@ -225,7 +225,6 @@ public class AuthService {
     }
 
     private String generateOtp() {
-
         int otp = (int) (Math.random() * 9000) + 1000;
         return String.valueOf(otp);
     }

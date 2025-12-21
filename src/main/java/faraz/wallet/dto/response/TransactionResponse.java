@@ -2,7 +2,7 @@ package faraz.wallet.dto.response;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import faraz.wallet.Enums.TransactionStatus;
+import faraz.wallet.enums.TransactionStatus;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

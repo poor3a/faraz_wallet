@@ -1,7 +1,7 @@
 package faraz.wallet.repository;
 
 import faraz.wallet.entity.Role;
-import faraz.wallet.Enums.RoleType;
+import faraz.wallet.enums.RoleType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

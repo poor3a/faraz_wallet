@@ -2,7 +2,7 @@ package faraz.wallet.controller.admin;
 
 import faraz.wallet.dto.response.UserResponse;
 import faraz.wallet.dto.request.AdminCreateUserRequest;
-import faraz.wallet.Enums.RoleType;
+import faraz.wallet.enums.RoleType;
 import faraz.wallet.entity.User;
 import faraz.wallet.service.adminstator.UserManagementService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class AdminUserController {
         return userManagementService.getAllUsers();
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<UserResponse> createUser(
             @RequestBody  AdminCreateUserRequest request
     ) {

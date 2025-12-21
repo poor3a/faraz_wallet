@@ -1,6 +1,7 @@
 package faraz.wallet.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ public class LoginWithPasswordRequest {
     private String phoneNumber;
 
     @NotBlank
+
     private String password;
 
 
